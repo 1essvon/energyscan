@@ -1,1 +1,186 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+
+  <!-- Charset UTF-8 biar karakter khusus kayak simbol math (°, ², î, ĵ) bisa tampil normal -->
+  <meta charset="UTF-8">
+
+  <!-- Ini penting buat tampilan di HP, biar ga menyempit atau keterlaluan kecil -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Deskripsi buat SEO, kalau orang googling bisa nemu halaman ini -->
+  <meta name="description" content="EnergiScan - Kalkulator konsumsi energi dan simulasi tagihan listrik rumah berbasis golongan PLN.">
+
+  <title>EnergiScan | Kalkulator Vektor Listrik</title>
+
+  <!-- File CSS kita sendiri -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Chart.js diambil dari CDN — buat bikin grafik donat di halaman hasil -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+<body>
+
+<!-- =====================================================
+     POPUP MASKOT VECTO
+     Muncul sebagai overlay di atas semua konten.
+     Defaultnya tersembunyi (class "hidden"), baru
+     keliatan kalau JS manggil tampilkanVecto().
+====================================================== -->
+<div id="vecto-popup" class="popup-overlay hidden">
+  <div class="popup-card">
+
+    <!-- Gambar maskot — src-nya diganti JS sesuai ekspresi yang dibutuhkan -->
+    <img src="maskot/vecto-happy.png" id="vecto-img" class="vecto-img">
+
+    <!-- Judul dan pesan popup — isinya juga diisi dari JS, bukan hardcode -->
+    <h2 id="v-title">Halo!</h2>
+    <p id="v-msg">Selamat datang di EnergiScan</p>
+
+    <!-- Tombol tutup, langsung panggil fungsi tutupPopup() di JS -->
+    <button onclick="tutupPopup()" class="btn-main">Mulai Sekarang ⚡</button>
+
+  </div>
+</div>
+
+
+<!-- =====================================================
+     WRAPPER UTAMA APLIKASI
+     Semua konten app ada di dalam sini, biar bisa
+     di-center dan dikasih background card putih.
+====================================================== -->
+<div class="app-wrapper">
+
+  <!-- Header atas yang tampilannya gradien biru-cyan -->
+  <header class="app-header">
+    <h1>Energi<span>Scan</span></h1>
+    <p>Implementasi Konsep Vektor Dalam Perhitungan Energi Listrik Berbasis Web</p>
+  </header>
+
+
+  <!-- =====================================================
+       PAGE 1 — LANDING
+       Layar pertama yang keliatan waktu buka app.
+       Class "active" bikin layar ini tampil, layar lain
+       disembunyikan CSS sampai JS ganti class-nya.
+  ====================================================== -->
+  <section id="p-landing" class="screen active">
+    <div class="hero-box">
+
+      <!-- Gambar maskot besar di tengah halaman landing -->
+      <img src="maskot/vecto-happy.png" class="hero-vecto">
+
+      <h2>Analisis Energi Rumah Lebih Cerdas ⚡</h2>
+      <p>Hitung tagihan listrik, lihat konsumsi alat, dan pahami konsep vektor resultan daya rumahmu.</p>
+
+      <!-- Kotak penjelasan kenapa kita pakai konsep vektor — penting buat konteks akademis -->
+      <div class="why-vector-box">
+        <h4>📐 Mengapa Menggunakan Konsep Vektor?</h4>
+        <p>
+          Setiap alat listrik menghasilkan daya yang dapat direpresentasikan sebagai <b>vektor dalam ruang 2D</b>.
+          Alat berdaya rendah (≤100W) membentuk <b>komponen horizontal (î)</b>, sementara alat berdaya tinggi
+          (>100W) membentuk <b>komponen vertikal (ĵ)</b>. Dengan penjumlahan vektor, kita mendapatkan
+          <b>vektor resultan R</b> yang merepresentasikan total beban listrik secara matematis —
+          lengkap dengan magnitude |R| dan sudut arah θ.
+        </p>
+      </div>
+
+      <!-- Tombol ke halaman berikutnya — panggil navigasi() di JS -->
+      <button onclick="navigasi('p-setup')" class="btn-main" style="max-width:280px; margin-top:8px;">Mulai Simulasi</button>
+
+    </div>
+  </section>
+
+
+  <!-- =====================================================
+       PAGE 2 — SETUP DAYA
+       User pilih golongan VA di sini.
+       Setelah pilih, tombol "Lanjut" baru aktif.
+  ====================================================== -->
+  <section id="p-setup" class="screen">
+    <div class="calc-grid">
+
+      <!-- Kolom kiri: form pilih VA -->
+      <div>
+        <h2>Pilih Daya Rumah</h2>
+        <div class="glass-card no-hover">
+          <label style="font-weight:600;">Golongan Daya Tersambung (VA)</label>
+
+          <!-- value = tarif Rp/kWh, data-va = batas VA rumah.
+               Dua nilai ini diambil JS saat select berubah -->
+          <select id="select-va" class="modern-input">
+            <option selected disabled>-- Pilih Golongan VA --</option>
+            <option value="415"  data-va="450" >450 VA — Subsidi R1 (Rp 415/kWh)</option>
+            <option value="605"  data-va="900" >900 VA — Subsidi R1 (Rp 605/kWh)</option>
+            <option value="1352" data-va="900" >900 VA — Non-Subsidi R1M (Rp 1.352/kWh)</option>
+            <option value="1444" data-va="1300">1300 VA — R1M (Rp 1.444/kWh)</option>
+            <option value="1444" data-va="2200">2200 VA — R1M (Rp 1.444/kWh)</option>
+            <option value="1699" data-va="3500">3500+ VA — R1T (Rp 1.699/kWh)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Kolom kanan: panel info tarif, isinya diupdate JS waktu user pilih VA -->
+      <div id="info-tarif" class="direct-info">
+        <h3>💡 Informasi</h3>
+        <p>Pilih daya rumah untuk melihat tarif listrik per kWh.</p>
+        <p style="margin-top:10px; font-size:0.82rem; color:#475569;">
+          Tarif berdasarkan <b>Permen ESDM No. 28 Tahun 2016</b> dan pembaruan PLN terkini.
+        </p>
+      </div>
+
+    </div>
+
+    <!-- Tombol navigasi — "Lanjut" disabled dulu sampai user pilih VA -->
+    <div class="btn-container">
+      <button onclick="navigasi('p-landing')" class="btn-sec">Kembali</button>
+      <button id="btn-next" onclick="navigasi('p-calc')" class="btn-main" disabled>Lanjut ➔</button>
+    </div>
+  </section>
+
+
+  <!-- =====================================================
+       PAGE 3 — INPUT ALAT
+       User input daftar alat elektronik di sini.
+       Ada preset cepat klik, form manual, dan
+       peringatan otomatis kalau kombinasi alat berbahaya.
+  ====================================================== -->
+  <section id="p-calc" class="screen">
+    <div class="calc-grid">
+
+      <!-- Kolom kiri: preset + list alat + warning -->
+      <div>
+        <h2>Input Peralatan Elektronik</h2>
+
+        <!-- Grid tombol preset — diisi oleh renderPresets() di JS -->
+        <div class="glass-card no-hover">
+          <label style="font-weight:600; font-size:0.9rem;">⚡ Tambah Cepat dari Preset:</label>
+          <div id="preset-grid" class="preset-grid"></div>
+        </div>
+
+        <!-- Tempat baris-baris alat manual muncul — diisi tambahAlat() di JS -->
+        <div id="list-alat"></div>
+
+        <!-- Tombol tambah alat manual — onclick-nya di-set lewat JS (add-item.onclick) -->
+        <button id="add-item" class="btn-sec full-btn" style="border:2px dashed #cbd5e1; margin-top:10px;">
+          + Tambah Alat Manual
+        </button>
+
+        <!-- Peringatan kombinasi berbahaya — defaultnya hidden,
+             muncul otomatis kalau JS deteksi kombinasi AC+Setrika dll -->
+        <div id="warning-beban" class="warning-beban-card" style="display:none;"></div>
+      </div>
+
+      <!-- Kolom kanan: panel edukasi statis sebagai referensi user -->
+      <div>
+        <div class="direct-info">
+          <h3>⚡ Edukasi Cepat</h3>
+          <p>Watt menunjukkan besar daya alat. Semakin besar watt dan semakin lama dipakai, semakin tinggi konsumsi energi.</p>
+          <hr style="margin:12px 0; border-color:#bfdbfe;">
+
+          <!-- Rumus dasar perhitungan kWh -->
+          <p><b>Rumus dasar:</b><br>E (kWh) = P (W) × t (jam) × hari ÷ 1000</p>
+          <hr style="margin:12px 0; border-color:#bfdbfe;">
+
 
