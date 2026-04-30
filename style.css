@@ -172,3 +172,488 @@ img { max-width: 100%; display: block; }
   background: white;
   margin-top: 8px;
 }
+/* Waktu input difokus, border jadi biru dan ada glow tipis */
+.modern-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(61,90,254,.12);
+}
+
+
+/* =====================================================
+   TOMBOL-TOMBOL
+   btn-main: gradien biru-cyan — tombol aksi utama
+   btn-sec: abu-abu — tombol sekunder (kembali dll)
+   btn-hapus: merah — khusus tombol hapus per baris alat
+====================================================== */
+.btn-main {
+  padding: 14px 26px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  font-weight: 700;
+  box-shadow: 0 12px 24px rgba(61,90,254,.25);
+}
+.btn-main:hover { transform: translateY(-2px) scale(1.02); }
+.btn-main:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+.btn-sec {
+  padding: 14px 22px;
+  border-radius: 14px;
+  background: #e2e8f0;
+  font-weight: 700;
+  color: #1e293b;
+}
+.btn-sec:hover { background: #cbd5e1; }
+/* Focus ring buat aksesibilitas keyboard */
+.btn-sec:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+
+/* Wrapper flex buat tombol kembali + lanjut berdampingan */
+.btn-container { display: flex; gap: 14px; margin-top: 28px; }
+.full-btn { width: 100%; margin-top: 15px; }
+
+/* Tombol ✕ hapus baris alat — ukuran fix biar tidak gepeng */
+.btn-hapus {
+  width: 46px;
+  border-radius: 14px;
+  background: #fee2e2;
+  color: var(--danger);
+  font-size: 1.1rem;
+  font-weight: 700;
+  flex-shrink: 0;  /* tidak ikut menyusut di flex container */
+}
+.btn-hapus:hover { background: #fecaca; }
+
+
+/* =====================================================
+   PANEL INFO (DIRECT-INFO)
+   Kotak biru muda dengan border kiri tebal —
+   dipakai sebagai panel edukasi di tiap halaman.
+====================================================== */
+.direct-info {
+  background: #eff6ff;
+  padding: 22px;
+  border-radius: 20px;
+  border-left: 5px solid var(--primary);
+  line-height: 1.7;
+}
+.direct-info h3 { margin-bottom: 10px; color: var(--primary); }
+
+
+/* =====================================================
+   POPUP OVERLAY (MASKOT VECTO)
+   Menutupi seluruh layar dengan overlay gelap.
+   backdrop-filter blur bikin konten di belakangnya
+   terlihat buram — efek seperti dialog native.
+====================================================== */
+.popup-overlay {
+  position: fixed;
+  inset: 0;                         /* shorthand untuk top/right/bottom/left: 0 */
+  background: rgba(15,23,42,.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;                    /* paling atas dari semua elemen */
+  backdrop-filter: blur(5px);
+}
+/* Class hidden pakai !important biar tidak bisa di-override inline */
+.hidden { display: none !important; }
+
+/* Kartu putih di tengah popup */
+.popup-card {
+  background: white;
+  width: 95%;
+  max-width: 430px;
+  padding: 30px;
+  border-radius: 28px;
+  text-align: center;
+  box-shadow: 0 25px 60px rgba(0,0,0,.2);
+  animation: fade .3s ease;
+}
+.popup-card h2 { margin-top: 12px; font-size: 1.6rem; }
+.popup-card p { margin: 12px 0 22px; color: var(--gray); line-height: 1.6; }
+
+/* Gambar maskot Vecto */
+.vecto-img {
+  width: 150px;
+  margin: auto;
+  transition: opacity 0.2s;         /* fade halus waktu gambar diganti JS */
+}
+
+/* Animasi mengambang — hanya aktif kalau user tidak matikan animasi di sistem */
+@media (prefers-reduced-motion: no-preference) {
+  .vecto-img, .hero-vecto { animation: floaty 2.3s infinite ease-in-out; }
+}
+@keyframes floaty {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-10px); }   /* naik 10px di tengah siklus */
+}
+
+
+/* =====================================================
+   HALAMAN LANDING
+   Layout terpusat dengan gambar maskot besar,
+   judul, deskripsi, dan kotak penjelasan vektor.
+====================================================== */
+.hero-box { text-align: center; padding: 20px; }
+.hero-vecto { width: 180px; margin: auto; }
+.hero-box h2 { font-size: 2rem; margin-top: 18px; }
+.hero-box p { max-width: 650px; margin: 14px auto 25px; color: var(--gray); line-height: 1.7; }
+
+
+/* =====================================================
+   PRESET ALAT RUMAH
+   Grid 2 kolom berisi tombol-tombol preset.
+   Hover kasih lift kecil biar terasa clickable.
+====================================================== */
+.preset-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 12px;
+}
+.preset-btn {
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: #eef2ff;
+  font-weight: 700;
+  font-size: .9rem;
+  border: 1.5px solid #bfdbfe;
+  text-align: center;
+}
+/* Teks watt yang lebih kecil di bawah nama alat */
+.preset-btn small { font-weight: 500; opacity: .7; display: block; margin-top: 2px; }
+.preset-btn:hover { background: #dbeafe; transform: translateY(-2px); border-color: var(--primary); }
+
+
+/* =====================================================
+   BARIS INPUT ALAT
+   Setiap alat punya baris sendiri: nama di atas,
+   watt dan jam di bawah (2 kolom kecil).
+====================================================== */
+.alat-row { margin-top: 12px; }
+/* Baris nama + tombol hapus berdampingan */
+.alat-top { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
+.alat-top .modern-input { margin-top: 0; flex: 1; }
+/* Baris watt dan jam — 2 kolom sama rata */
+.alat-bottom { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.alat-bottom .modern-input { margin-top: 0; }
+
+
+/* =====================================================
+   PERINGATAN KOMBINASI BERBAHAYA
+   Muncul otomatis saat JS deteksi kombinasi alat
+   yang berisiko. Dua level: kuning (hati-hati)
+   dan merah (jangan bersamaan).
+====================================================== */
+.warning-beban-card {
+  border-radius: 16px;
+  padding: 16px 20px;
+  margin-top: 12px;
+  animation: fade 0.3s ease;       /* fade in waktu pertama muncul */
+}
+/* Level kuning — border kiri amber */
+.warning-beban-card.level-kuning {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-left: 4px solid #f59e0b;
+}
+/* Level merah — border kiri merah, lebih mencolok */
+.warning-beban-card.level-merah {
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  border-left: 4px solid #ef4444;
+}
+.warning-beban-card h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 8px; }
+/* Tiap baris peringatan dipisah garis tipis */
+.warning-item { font-size: 0.82rem; color: #44403c; padding: 6px 0; border-bottom: 1px solid rgba(0,0,0,.06); line-height: 1.5; }
+.warning-item:last-child { border-bottom: none; padding-bottom: 0; }
+
+
+/* =====================================================
+   KARTU HASIL (kWh dan Tagihan)
+   Dua kartu berdampingan di atas halaman hasil.
+   Kartu kanan (.blue) punya gradient biru = tagihan.
+====================================================== */
+.result-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-bottom: 10px;
+}
+.res-card { padding: 25px; border-radius: 22px; background: #f8fafc; text-align: center; }
+.res-card span { color: var(--gray); font-size: .95rem; }
+.res-card h2 { margin-top: 10px; font-size: 2rem; }
+/* Kartu tagihan — gradien biru penuh dengan teks putih */
+.res-card.blue {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+}
+.res-card.blue span { color: white; opacity: .9; }
+
+
+/* =====================================================
+   BARIS INFO (INFO-LINE)
+   Dipakai di kartu profil rumah, fakta, dan rekomendasi.
+   Tiap baris punya garis bawah tipis kecuali yang terakhir.
+====================================================== */
+.info-line { padding: 10px 0; border-bottom: 1px solid #e2e8f0; font-size: .9rem; }
+.info-line:last-child { border: none; }
+
+
+/* =====================================================
+   VISUALISASI VEKTOR
+   Kotak besar dengan canvas kartesian.
+   Canvas width 100% tapi height auto — JS yang atur
+   tingginya berdasarkan lebar aktual saat render.
+====================================================== */
+.vector-box { margin-top: 0; border: 2px solid #bfdbfe; }
+.vector-box h3 { margin-bottom: 18px; }
+#vectorCanvas {
+  width: 100%;
+  height: auto;
+  background: white;
+  border-radius: 18px;
+  border: 1px solid #e2e8f0;
+  display: block;
+}
+
+/* Baris angka X, Y, |R|, θ di bawah canvas */
+.vektor-output {
+  margin-top: 18px;
+  padding: 15px;
+  background: #eff6ff;
+  border-radius: 14px;
+  line-height: 1.8;
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4px 20px;
+}
+
+/* Header tombol replay di atas canvas */
+.vector-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.vector-header h3 { margin-bottom: 0; }
+
+/* Tombol putar ulang animasi */
+.btn-replay {
+  padding: 8px 16px;
+  border-radius: 10px;
+  background: #eff6ff;
+  border: 1.5px solid #bfdbfe;
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: background 0.2s, transform 0.2s;
+}
+.btn-replay:hover { background: #dbeafe; transform: translateY(-1px); }
+
+/* Legenda warna panah vektor */
+.vektor-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Panel rumus matematika — latar gelap biar kesan akademis/code editor -->*/
+.rumus-box {
+  margin-top: 20px;
+  padding: 20px;
+  background: #0f172a;
+  border-radius: 16px;
+  color: white;
+}
+.rumus-box h4 { font-size: 1rem; margin-bottom: 14px; color: #93c5fd; }
+/* Grid 2 kolom untuk 4 rumus */
+.rumus-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+.rumus-card {
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+.rumus-label { font-size: 0.75rem; color: #94a3b8; margin-bottom: 6px; }
+/* Font monospace buat teks rumus */
+.rumus-formula {
+  font-family: 'Courier New', monospace;
+  font-size: 0.95rem;
+  color: #7dd3fc;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+/* Panel langkah perhitungan step-by-step */
+.edukasi-box {
+  margin-top: 16px;
+  padding: 20px;
+  background: #f8fafc;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+}
+.edukasi-box h4 { font-size: 1rem; margin-bottom: 14px; color: var(--primary); }
+/* Tiap langkah: nomor bulat + konten teks */
+.step-item {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 12px 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+.step-item:last-child { border-bottom: none; padding-bottom: 0; }
+/* Lingkaran nomor step */
+.step-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.step-body { flex: 1; line-height: 1.6; font-size: 0.88rem; }
+.step-title { font-weight: 700; color: var(--text-main); margin-bottom: 4px; }
+.step-detail { color: var(--text-muted); }
+/* Kotak biru kecil untuk hasil perhitungan per langkah */
+.step-result {
+  margin-top: 6px;
+  padding: 6px 10px;
+  background: #eff6ff;
+  border-radius: 8px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.85rem;
+  color: var(--primary);
+  font-weight: 600;
+}
+
+
+/* =====================================================
+   SIMULASI HEMAT
+   Tiap baris alat punya slider sendiri.
+   Nama dan potensi hemat (hijau) di atas,
+   slider dan info jam di bawah.
+====================================================== */
+.simulasi-card { padding: 24px; }
+.sim-row { padding: 12px 0; border-bottom: 1px solid #e2e8f0; }
+.sim-row:last-child { border-bottom: none; }
+.sim-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.sim-nama { font-weight: 600; font-size: 0.9rem; }
+/* Teks "Hemat Rp X.XXX" — muncul hijau kalau ada penghematan */
+.sim-saving { font-size: 0.82rem; color: #16a34a; font-weight: 700; min-width: 120px; text-align: right; }
+.sim-bottom { display: flex; align-items: center; gap: 10px; font-size: 0.82rem; color: var(--text-muted); }
+/* Slider diaksen warna primary biar seragam */
+.sim-slider { flex: 1; accent-color: var(--primary); cursor: pointer; }
+.sim-jam-baru { min-width: 55px; text-align: right; font-weight: 600; color: var(--primary); }
+
+/* Kotak hijau total hemat — muncul kalau ada slider yang digeser */
+#total-hemat {
+  margin-top: 16px;
+  padding: 14px;
+  background: #dcfce7;
+  border-radius: 14px;
+  color: #166534;
+  font-weight: 700;
+  text-align: center;
+}
+
+
+/* =====================================================
+   KOTAK PENJELASAN VEKTOR (LANDING PAGE)
+   Muncul di halaman landing sebagai justifikasi
+   kenapa pendekatan vektor dipakai.
+====================================================== */
+.why-vector-box {
+  max-width: 680px;
+  margin: 0 auto 24px;
+  background: #eff6ff;
+  border: 1.5px solid #bfdbfe;
+  border-left: 5px solid var(--primary);
+  border-radius: 18px;
+  padding: 18px 22px;
+  text-align: left;
+}
+.why-vector-box h4 {
+  color: var(--primary);
+  font-size: 1rem;
+  margin-bottom: 10px;
+}
+.why-vector-box p {
+  font-size: 0.88rem;
+  color: #334155;
+  line-height: 1.75;
+}
+
+
+/* =====================================================
+   DAFTAR REFERENSI
+   Kotak abu-abu muda di bawah halaman hasil.
+   List bernomor dengan separator garis tipis.
+====================================================== */
+.referensi-box {
+  margin-top: 24px;
+  padding: 20px 24px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+}
+.referensi-box h4 { font-size: 1rem; color: var(--text-main); margin-bottom: 12px; }
+.referensi-list { padding-left: 20px; margin: 0; }
+.referensi-list li {
+  font-size: 0.83rem;
+  color: #475569;
+  line-height: 1.7;
+  padding: 5px 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+.referensi-list li:last-child { border-bottom: none; }
+.referensi-list em { color: #1e293b; font-style: italic; }
+
+
+/* =====================================================
+   RESPONSIVE — BREAKPOINTS
+   900px: grid jadi 1 kolom (tablet landscape)
+   768px: perbaikan tambahan untuk HP (font, padding, dll)
+====================================================== */
+@media (max-width: 900px) {
+  /* Semua grid dua/tiga kolom balik ke satu kolom */
+  .calc-grid, .triple-grid { grid-template-columns: 1fr; }
+  /* Rumus dan output vektor juga jadi satu kolom */
+  .rumus-grid, .vektor-output { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  body { padding: 14px; }                            /* kurangi padding body */
+  .app-header h1 { font-size: 1.9rem; }
+  .hero-box h2 { font-size: 1.5rem; }
+  .result-header { grid-template-columns: 1fr; }    /* kartu kWh dan tagihan susun vertikal */
+  .btn-container { flex-direction: column; }        /* tombol kembali/lanjut susun vertikal */
+  .preset-grid { grid-template-columns: 1fr; }      /* preset 1 kolom biar mudah diklik */
+}
