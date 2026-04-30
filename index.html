@@ -183,4 +183,178 @@
           <p><b>Rumus dasar:</b><br>E (kWh) = P (W) × t (jam) × hari ÷ 1000</p>
           <hr style="margin:12px 0; border-color:#bfdbfe;">
 
+<!-- Tabel referensi watt umum buat user yang tidak tahu watt alatnya -->
+          <p style="font-size:0.85rem;"><b>Estimasi watt umum:</b></p>
+          <ul style="font-size:0.82rem; margin-top:8px; padding-left:16px; color:#475569; line-height:1.9;">
+            <li>Lampu LED: 5–15 W</li>
+            <li>TV LED: 50–100 W</li>
+            <li>Kulkas: 70–150 W</li>
+            <li>AC ½ PK: 350–400 W</li>
+            <li>Setrika: 300–400 W</li>
+          </ul>
+          <hr style="margin:12px 0; border-color:#bfdbfe;">
 
+          <!-- Pengingat batas validasi input -->
+          <p style="font-size:0.8rem; color:#64748b;">⚠️ Jam pemakaian maks. 24 jam/hari. Nilai negatif tidak diterima.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Navigasi bawah -->
+    <div class="btn-container">
+      <button onclick="navigasi('p-setup')" class="btn-sec">Kembali</button>
+      <!-- id="btn-hitung" dipakai JS buat ubah teks jadi "Menghitung..." waktu loading -->
+      <button onclick="prosesData()" class="btn-main" id="btn-hitung">Hitung Sekarang ➔</button>
+    </div>
+  </section>
+
+
+  <!-- =====================================================
+       PAGE 4 — HALAMAN HASIL
+       Semua output kalkulasi ditampilkan di sini.
+       Isinya diisi JS setelah prosesData() selesai.
+  ====================================================== -->
+  <section id="p-result" class="screen">
+
+    <!-- Dua kartu angka besar di atas: total kWh dan estimasi tagihan -->
+    <div class="result-header">
+      <div class="res-card">
+        <span>Konsumsi Energi</span>
+        <!-- Diisi JS: totalKwh.toFixed(1) + " kWh" -->
+        <h2 id="out-kwh">0 kWh</h2>
+      </div>
+      <div class="res-card blue">
+        <span>Estimasi Tagihan</span>
+        <!-- Diisi JS: "Rp " + totalRp.toLocaleString() -->
+        <h2 id="out-rp">Rp 0</h2>
+      </div>
+    </div>
+
+    <!-- Grafik donat (kiri) dan panel tips hemat dari Vecto (kanan) -->
+    <div class="calc-grid">
+      <!-- Canvas untuk Chart.js — ukurannya otomatis menyesuaikan kolom -->
+      <div class="glass-card no-hover"><canvas id="myChart"></canvas></div>
+      <!-- Panel tips — diisi updateTips() di JS, isinya kontekstual sesuai alat user -->
+      <div id="v-tips" class="direct-info"></div>
+    </div>
+
+    <!-- Tiga kartu info tambahan: profil rumah, fakta energi, rekomendasi -->
+    <div class="triple-grid">
+      <!-- Kartu profil: VA, total watt, status, tarif — diisi updateInfoTambahan() -->
+      <div class="glass-card">
+        <h3>🏠 Profil Rumah</h3>
+        <div id="profil-rumah"></div>
+      </div>
+      <!-- Kartu fakta: konten dinamis sesuai alat yang diinput (ada AC? ada LED?) -->
+      <div class="glass-card">
+        <h3>📘 Fakta Energi</h3>
+        <div id="fakta-energi"></div>
+      </div>
+      <!-- Kartu rekomendasi: alat paling boros berdasarkan data nyata user -->
+      <div class="glass-card">
+        <h3>💡 Rekomendasi Vecto</h3>
+        <div id="ai-analisa"></div>
+      </div>
+    </div>
+
+
+    <!-- =====================================================
+         VISUALISASI VEKTOR
+         Ini bagian utama yang paling akademis —
+         gambar diagram vektor kartesian dengan animasi.
+    ====================================================== -->
+    <div class="glass-card vector-box no-hover">
+
+      <!-- Header dengan tombol replay animasi -->
+      <div class="vector-header">
+        <h3>📐 Visualisasi Vektor Beban Listrik</h3>
+        <button id="btn-replay" class="btn-replay" onclick="replayVektor()">▶ Putar Ulang</button>
+      </div>
+
+      <!-- Legenda warna untuk panah X, Y, dan Resultan -->
+      <div class="vektor-legend">
+        <span class="legend-item"><span class="legend-dot" style="background:#22c55e;"></span>Komponen X — Alat Ringan (≤100W)</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#f59e0b;"></span>Komponen Y — Alat Berat (>100W)</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#3d5afe;"></span>Vektor Resultan R</span>
+      </div>
+
+      <!-- Canvas tempat gambar vektor dirender — gambarVektor() di JS yang handle ini -->
+      <canvas id="vectorCanvas"></canvas>
+
+      <!-- Ringkasan angka X, Y, |R|, θ dalam format teks — diisi JS setelah animasi -->
+      <div id="vektor-output" class="vektor-output"></div>
+
+      <!-- Panel rumus matematika dengan latar gelap ala code editor -->
+      <div class="rumus-box">
+        <h4>📘 Rumus Matematika</h4>
+        <div class="rumus-grid">
+          <!-- Tiap rumus-card diisi JS dengan angka nyata hasil kalkulasi user -->
+          <div class="rumus-card">
+            <div class="rumus-label">Magnitude Resultan</div>
+            <div class="rumus-formula" id="rumus-magnitude">|R| = √(X² + Y²)</div>
+          </div>
+          <div class="rumus-card">
+            <div class="rumus-label">Sudut Resultan (θ)</div>
+            <div class="rumus-formula" id="rumus-sudut">θ = arctan(Y / X)</div>
+          </div>
+          <div class="rumus-card">
+            <div class="rumus-label">Unit Vektor</div>
+            <div class="rumus-formula" id="rumus-unit">R̂ = (X/|R|)î + (Y/|R|)ĵ</div>
+          </div>
+          <div class="rumus-card">
+            <div class="rumus-label">Notasi Vektor</div>
+            <div class="rumus-formula" id="rumus-vektor">R = Xî + Yĵ</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel langkah perhitungan step-by-step — diisi JS setelah gambarVektor() -->
+      <div class="edukasi-box">
+        <h4>🧮 Langkah Perhitungan Step-by-Step</h4>
+        <div id="edukasi-steps"></div>
+      </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         SIMULASI HEMAT
+         Slider interaktif per alat — user geser slider
+         dan langsung kelihatan berapa penghematannya.
+    ====================================================== -->
+    <div class="glass-card no-hover simulasi-card">
+      <h3>🎛️ Simulasi Hemat</h3>
+      <p style="font-size:0.85rem; color:#64748b; margin:8px 0 16px;">Geser slider untuk kurangi jam pemakaian dan lihat potensi penghematan real-time:</p>
+      <!-- Baris-baris slider diisi oleh updateSimulasi() di JS -->
+      <div id="simulasi-list"></div>
+      <!-- Total hemat semua alat — muncul kalau ada slider yang digeser -->
+      <p id="total-hemat" style="display:none;"></p>
+    </div>
+
+
+    <!-- =====================================================
+         REFERENSI
+         Daftar sumber yang dipakai sebagai dasar
+         rumus dan data tarif PLN di aplikasi ini.
+    ====================================================== -->
+    <div class="referensi-box">
+      <h4>📚 Referensi</h4>
+      <ol class="referensi-list">
+        <li>Stewart, J. (2016). <em>Calculus: Early Transcendentals</em>, 8th ed. Cengage Learning. — Konsep vektor, operasi, dan aplikasinya.</li>
+        <li>Kementerian ESDM RI. (2016). <em>Peraturan Menteri ESDM No. 28 Tahun 2016 tentang Tarif Tenaga Listrik</em>. — Dasar tarif PLN per golongan VA.</li>
+        <li>PLN. (2024). <em>Tarif Tenaga Listrik untuk Keperluan Rumah Tangga</em>. pln.co.id — Data tarif Rp/kWh.</li>
+        <li>Sadiku, M. N. O. (2013). <em>Fundamentals of Electric Circuits</em>, 5th ed. McGraw-Hill. — Dasar perhitungan daya listrik P = V × I.</li>
+      </ol>
+    </div>
+
+    <button onclick="navigasi('p-calc')" class="btn-sec full-btn" style="margin-top:20px;">Edit Data Lagi</button>
+
+  </section>
+
+</div><!-- end app-wrapper -->
+
+<!-- Script utama dimuat paling bawah biar semua elemen HTML sudah ada duluan -->
+<script src="script.js"></script>
+</body>
+</html>
